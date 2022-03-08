@@ -1,0 +1,25 @@
+all:
+  hosts:
+  children:
+    ubuntu:
+      hosts:
+        pamela:
+          ansible_host: 192.168.54.212
+          ansible_user: ansible
+          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
+    raspberry:
+      hosts:
+        schantalle: 
+          ansible_host: 192.168.54.109
+          ansible_user: ansible
+          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
+        schakeline: 
+          ansible_host: 192.168.54.167
+          ansible_user: ansible
+          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
+    windows:
+      hosts:
+        surface:
+          ansible_host: 192.168.51.106
+        laptop-lara:
+          ansible_host: 192.168.51.105

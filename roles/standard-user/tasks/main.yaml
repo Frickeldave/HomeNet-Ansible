@@ -1,0 +1,109 @@
+---
+#################################################################################
+# Create password
+#################################################################################
+
+- name: "{{username}} : Create random password value"
+  shell: "tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''"
+  register: randomstr
+
+- name: "{{username}} : Use random string as password"
+  set_fact:
+    pwdstr: "{{randomstr.stdout}}"
+  when: password is not defined or password | length < 1
+
+- name: "{{username}} : Use static string as password"
+  set_fact:
+    pwdstr: "{{password}}"
+  when: password | length > 0
+
+- name: "{{username}} : Create encrypted password"
+  shell: mkpasswd -m sha-512 {{pwdstr}}
+  register: pwdstr_encrypted
+
+- name: "{{username}} : Remove secret variables"
+  set_fact:
+    pwdstr: ""
+
+- name: "{{username}} : Remove secret variables"
+  set_fact:
+    password: ""
+
+#################################################################################
+# Create uid
+#################################################################################
+
+- name: "{{username}} : Create random user-id"
+  shell: "shuf -i 1500-65535 -n1"
+  register: randomuid
+
+- name: "{{username}} : Use random uid"
+  set_fact:
+    uid: "{{randomuid.stdout|int}}"
+  when: user_id is not defined or user_id|int < 1
+
+- name: "{{username}} : Use static user-id"
+  set_fact:
+    uid: "{{user_id|int}}"
+  when: user_id is defined and user_id|int > 0
+
+
+#################################################################################
+# Create user
+#################################################################################
+
+- name: "{{username}} : Create user"
+  user:
+    name: "{{username}}"
+    shell: /bin/bash
+    password: "{{pwdstr_encrypted.stdout}}"
+    home: "{{user_home}}"
+    update_password: on_create
+    uid: "{{uid}}"
+    
+#################################################################################
+# Set users permissions
+#################################################################################
+
+- name: "{{username}} : Add user to sudo group"
+  user:
+    name: "{{username}}"
+    groups: sudo
+    append: true # --> user is not removed from any other group
+  when: (make_sudo_passwordless is defined and make_sudo_passwordless == true) or (make_sudo is defined and make_sudo == true)
+
+- name: "{{username}} : Add user to sudo-nopasswd group"
+  user:
+    name: "{{username}}"
+    groups: sudo-nopasswd
+    append: true # --> user is not removed from any other group
+  when: make_sudo_passwordless is defined and make_sudo_passwordless == true
+
+- name: "{{username}} : Remove user from sudo group"
+  shell: /usr/sbin/delgroup {{username}} sudo
+  when: not (make_sudo_passwordless is defined and make_sudo_passwordless == true) and not (make_sudo is defined and make_sudo == true)
+  ignore_errors: yes
+  failed_when: false
+
+- name: "{{username}} : Remove user from sudo-nopasswd group"
+  shell: /usr/sbin/delgroup sven sudo-nopasswd
+  when: not (make_sudo_passwordless is defined and make_sudo_passwordless == true)
+  ignore_errors: yes
+  failed_when: false
+
+- name: "{{username}} : Create user's .ssh directory"
+  file:
+    path: "{{user_home}}/.ssh"
+    state: directory
+    owner: "{{username}}"
+    group: "{{username}}"
+    mode: 0700
+
+- name: "{{username}} : Set public key"
+  lineinfile:
+    path: "{{user_home}}/.ssh/authorized_keys"
+    owner: "{{username}}"
+    group: "{{username}}"
+    mode: 0600
+    line: "{{ssh_public_key}}"
+    create: yes

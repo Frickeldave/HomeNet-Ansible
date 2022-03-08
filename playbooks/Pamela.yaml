@@ -1,0 +1,31 @@
+---
+- name: ans01-dev
+  hosts: ans01-dev
+  become: yes
+
+  tasks:
+
+    - name: "Import variables from file"
+      include_vars:
+        file: cm-team.yaml
+
+    - name: Install whois to get mkpasswd tool (needed by role standard-user)
+      apt:
+        name: whois
+        
+    - name: Create admin group if needed
+      include_role:
+        name: admin-group
+
+    # - name: Create Users
+    #   include_role:
+    #     name: standard-user
+    #   vars:
+    #     username: "{{item.username}}"
+    #     password: "{{item.password}}"
+    #     user_home: "{{item.home_dir}}"
+    #     make_sudo: "{{item.make_sudo}}"
+    #     make_sudo_passwordless: "{{item.make_sudo_passwordless}}"
+    #     user_id: "{{item.userid|int}}"
+    #     ssh_public_key: "{{item.ssh_public_key}}"
+    #   loop: "{{ accounts }}"
