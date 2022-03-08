@@ -7,7 +7,7 @@
 
     - name: "Import variables from file"
       include_vars:
-        file: cm-team.yaml
+        file: HomeNet_Users_vars.yaml
 
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
