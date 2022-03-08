@@ -1,31 +1,28 @@
 all:
   hosts:
+    wsl-homenet-ansible:
+      ansible_host: 127.0.0.1
+    pamela:
+      ansible_host: 192.168.54.212
+    hildegard:
+      ansible_host: 192.168.51.178  
+    schantalle: 
+      ansible_host: 192.168.54.109
+    schakeline: 
+      ansible_host: 192.168.54.167
+    surface:
+      ansible_host: 192.168.51.106
+    laptop-lara:
+      ansible_host: 192.168.51.105
   children:
     wsl:
-      hosts:
-        wsl-homenet-ansible:
-          ansible_host: 127.0.0.1
-          ansible_user: ansible
-          ansible_ssh_private_key_file: "~/.ssh/ansible.key"        
+      wsl-homenet-ansible:   
     ubuntu:
-      hosts:
-        pamela:
-          ansible_host: 192.168.54.212
-          ansible_user: ansible
-          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
-    raspberry:
-      hosts:
-        schantalle: 
-          ansible_host: 192.168.54.109
-          ansible_user: ansible
-          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
-        schakeline: 
-          ansible_host: 192.168.54.167
-          ansible_user: ansible
-          ansible_ssh_private_key_file: "~/.ssh/ansible.key"
+      pamela:
+      hildegard:
+    raspberryos:
+      schantalle:
+      schakeline:
     windows:
-      hosts:
-        surface:
-          ansible_host: 192.168.51.106
-        laptop-lara:
-          ansible_host: 192.168.51.105
+      surface:
+      laptop-lara:

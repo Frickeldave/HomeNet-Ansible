@@ -1,13 +1,13 @@
 ---
-- name: Pamela
-  hosts: wsl-homenet-ansible, pamela
+- name: Baseline
+  hosts: all
   become: yes
 
   tasks:
 
-    - name: "Import variables from file"
-      include_vars:
-        file: HomeNet_Users_vars.yaml
+    # - name: "Import variables from file"
+    #   include_vars:
+    #     file: HomeNet_Users_vars.yaml
 
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
@@ -29,6 +29,6 @@
         user_id: "{{item.userid|int}}"
         ssh_public_key: "{{item.ssh_public_key}}"
         hostname_match: "{{item.hostname_match}}"
-      when: item.hostname_match == "*" or inventory_hostname in item.hostname_match
+      when: accounts is defined
       loop: "{{ accounts }}"
-      no_log: true #Supress output for security reasons
+      no_log: false #Supress output for security reasons

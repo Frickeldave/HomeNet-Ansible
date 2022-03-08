@@ -1,0 +1,16 @@
+---
+- name: Test
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: "Import variables from file"
+      include_vars:
+        file: HomeNet_Users_vars.yaml
+
+    - name: Restart the firewalld service to load in the firewall changes
+      become: true
+      service:
+        name: firewalld
+        state: restarted
