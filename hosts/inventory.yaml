@@ -1,6 +1,12 @@
 all:
   hosts:
   children:
+    wsl:
+      hosts:
+        wsl-homenet-ansible:
+          ansible_host: 127.0.0.1
+          ansible_user: ansible
+          ansible_ssh_private_key_file: "~/.ssh/ansible.key"        
     ubuntu:
       hosts:
         pamela:
