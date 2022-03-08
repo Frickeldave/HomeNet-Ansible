@@ -1,6 +1,6 @@
 ---
-- name: ans01-dev
-  hosts: ans01-dev
+- name: Pamela
+  hosts: pamela
   become: yes
 
   tasks:
