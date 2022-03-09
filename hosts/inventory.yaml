@@ -16,7 +16,7 @@ all:
       ansible_host: 192.168.51.105
   children:
     wsl:
-      wsl-homenet-ansible:   
+      wsl-homenet-ansible:
     ubuntu:
       pamela:
       hildegard:

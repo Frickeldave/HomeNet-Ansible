@@ -12,7 +12,15 @@
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
         name: whois
-        
+
+    - name: Install unzip binary
+      apt:
+        name: unzip
+
+    - name: Install fontconfig binary
+      apt:
+        name: fontconfig
+
     - name: Create admin group if needed
       include_role:
         name: admin-group

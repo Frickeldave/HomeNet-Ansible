@@ -5,12 +5,7 @@
 
   tasks:
 
-    - name: "Import variables from file"
-      include_vars:
-        file: HomeNet_Users_vars.yaml
+    - name: Install and configure oh-my-posh
+      include_role:
+        name: app-ohmyposh
 
-    - name: Restart the firewalld service to load in the firewall changes
-      become: true
-      service:
-        name: firewalld
-        state: restarted
