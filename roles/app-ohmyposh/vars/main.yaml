@@ -8,7 +8,7 @@ ohmyposh_linux_bin_url_amd64: https://github.com/JanDeDobbeleer/oh-my-posh/relea
 ohmyposh_linux_bin_location: /usr/local/bin/oh-my-posh
 # TODO: Replace URL with internal arteface repository
 ohmyposh_themes_url: https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v{{ohmyposh_version}}/themes.zip
-ohmyposh_theme: fish
+ohmyposh_theme: aliens
 nerdfont: meslo
 # TODO: Replace URL with internal arteface repository
 nerdfont_url: https://github.com/ryanoasis/nerd-fonts/releases/download/v{{nerdfont_version}}/{{nerdfont}}.zip
