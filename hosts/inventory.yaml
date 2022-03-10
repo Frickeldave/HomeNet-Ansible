@@ -16,13 +16,17 @@ all:
       ansible_host: 192.168.51.105
   children:
     wsl:
-      wsl-homenet-ansible:
+      hosts:
+        wsl-homenet-ansible:
     ubuntu:
-      pamela:
-      hildegard:
+      hosts:
+        pamela:
+        hildegard:
     raspberryos:
-      schantalle:
-      schakeline:
+      hosts:
+        schantalle:
+        schakeline:
     windows:
-      surface:
-      laptop-lara:
+      hosts:
+        surface:
+        laptop-lara:
