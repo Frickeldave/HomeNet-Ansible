@@ -40,7 +40,6 @@
 - name: "Update font-cache"
   shell: "fc-cache -fv"
 
-
 #################################################################################
 # Download and install binary
 #################################################################################
@@ -51,11 +50,27 @@
   register:
     "bin_is_downloaded"
 
-- name: Download binary
+- debug: 
+    var: ansible_architecture
+
+- name: Download ARM binary
   get_url:
-    url: "{{ohmyposh_linux_bin_url}}"
+    url: "{{ohmyposh_linux_bin_url_arm}}"
     dest: "{{ohmyposh_linux_bin_location}}/oh-my-posh-{{ohmyposh_version}}"
-  when: not bin_is_downloaded.stat.exists
+  when: not bin_is_downloaded.stat.exists and ansible_architecture == "armv6l"
+
+- name: Download ARM64 binary
+  get_url:
+    url: "{{ohmyposh_linux_bin_url_arm64}}"
+    dest: "{{ohmyposh_linux_bin_location}}/oh-my-posh-{{ohmyposh_version}}"
+  when: not bin_is_downloaded.stat.exists and ansible_architecture == "aarch64"
+
+
+- name: Download AMD64 binary
+  get_url:
+    url: "{{ohmyposh_linux_bin_url_amd64}}"
+    dest: "{{ohmyposh_linux_bin_location}}/oh-my-posh-{{ohmyposh_version}}"
+  when: not bin_is_downloaded.stat.exists and ansible_architecture == "x86_64"
 
 - name: update link to binary
   file:

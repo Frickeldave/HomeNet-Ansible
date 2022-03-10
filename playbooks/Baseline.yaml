@@ -2,12 +2,9 @@
 - name: Baseline
   hosts: all
   become: yes
+  gather_facts: yes
 
   tasks:
-
-    # - name: "Import variables from file"
-    #   include_vars:
-    #     file: HomeNet_Users_vars.yaml
 
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
@@ -40,3 +37,7 @@
       when: accounts is defined
       loop: "{{ accounts }}"
       no_log: false #Supress output for security reasons
+
+    - name: Install and configure oh-my-posh
+      include_role:
+        name: app-ohmyposh
