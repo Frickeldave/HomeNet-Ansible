@@ -6,6 +6,10 @@
 
   tasks:
 
+    - name: "Import variables from file"
+      include_vars:
+        file: ./../hosts/global_vars/accounts.yaml
+
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
         name: whois
@@ -18,13 +22,32 @@
       apt:
         name: fontconfig
 
-    - name: Create admin group if needed
+    - name: Install and configure oh-my-posh
       include_role:
-        name: admin-group
+        name: app-ohmyposh
+
+    - name: Configure vi systemwide
+      include_role:
+        name: cfg-vi
+
+    - name: Create standard groups if needed
+      include_role:
+        name: cfg-standard-groups
+
+    - name: Configure ansible
+      include_role:
+        name: cfg-ansible-user
+      vars:
+        username: "{{ansible_user}}"
+        ssh_public_key: "{{ansible_user_config.ssh_public_key}}"
+
+    - name: Configure SSH
+      include_role:
+        name: cfg-ssh
 
     - name: Create Users
       include_role:
-        name: standard-user
+        name: cfg-standard-user
       vars:
         username: "{{item.username}}"
         password: "{{item.password}}"
@@ -34,10 +57,6 @@
         user_id: "{{item.userid|int}}"
         ssh_public_key: "{{item.ssh_public_key}}"
         hostname_match: "{{item.hostname_match}}"
-      when: accounts is defined
+      when: accounts is defined and (item.hostname_match == "*" or inventory_hostname in item.hostname_match)
       loop: "{{ accounts }}"
-      no_log: false #Supress output for security reasons
-
-    - name: Install and configure oh-my-posh
-      include_role:
-        name: app-ohmyposh
+      no_log: true #Supress output for security reasons

@@ -1,0 +1,3 @@
+---
+ssh_group: homenet_ssh
+ssh_port: 22

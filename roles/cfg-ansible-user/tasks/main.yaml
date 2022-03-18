@@ -1,0 +1,83 @@
+---
+
+#################################################################################
+# Create password
+#################################################################################
+
+- name: "{{username}} : Create random password value"
+  shell: "tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''"
+  register: randomstr
+
+- name: "{{username}} : Use random string as password"
+  set_fact:
+    pwdstr: "{{randomstr.stdout}}"
+  when: password is not defined or password | length < 1
+
+- name: "{{username}} : Create encrypted password"
+  shell: mkpasswd -m sha-512 {{pwdstr}}
+  register: pwdstr_encrypted
+
+- name: "{{username}} : Remove secret variables"
+  set_fact:
+    pwdstr: ""
+
+
+#################################################################################
+# Create user
+#################################################################################
+
+- name: "{{username}} : Create user"
+  user:
+    name: "{{username}}"
+    shell: /bin/bash
+    password: "{{pwdstr_encrypted.stdout}}"
+    home: "{{user_home}}"
+    update_password: on_create
+
+#################################################################################
+# Set users sudo permissions
+#################################################################################
+
+- name: "{{username}} : Add user to sudo group"
+  user:
+    name: "{{username}}"
+    groups: "{{group_sudo}}"
+    append: true # --> user is not removed from any other group
+
+- name: "{{username}} : Add user to sudo-nopasswd group"
+  user:
+    name: "{{username}}"
+    groups: "{{group_sudonopwd}}"
+    append: true # --> user is not removed from any other group
+
+#################################################################################
+# Allow user to be used as ssh target
+#################################################################################
+
+- name: "{{username}} : Add user to group {{group_ssh}}"
+  user:
+    name: "{{username}}"
+    groups: "{{group_ssh}}"
+    append: true # --> user is not removed from any other group
+
+#################################################################################
+# Configure ssh for user
+#################################################################################
+
+- name: "{{username}} : Create user's .ssh directory"
+  file:
+    path: "{{user_home}}/.ssh"
+    state: directory
+    owner: "{{username}}"
+    group: "{{username}}"
+    mode: 0700
+
+- name: "{{username}} : Set public key"
+  lineinfile:
+    path: "{{user_home}}/.ssh/authorized_keys"
+    owner: "{{username}}"
+    group: "{{username}}"
+    mode: 0600
+    line: "{{ssh_public_key}}"
+    create: yes
+  when: ssh_public_key is defined

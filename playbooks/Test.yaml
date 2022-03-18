@@ -5,7 +5,7 @@
 
   tasks:
 
-    - name: Install and configure oh-my-posh
+    - name: Configure vi systemwide
       include_role:
-        name: app-ohmyposh
+        name: app-vi
 

@@ -1,0 +1,21 @@
+---
+- name: "Create {{group_sudonopwd}} group"
+  group:
+    name: "{{group_sudonopwd}}"
+    gid: "{{group_sudonopwd_id}}"
+  when: group_sudonopwd is defined and group_sudonopwd_id is defined
+
+- name: "Add {{group_sudonopwd}} group to sudoers file"
+  lineinfile:
+    dest: /etc/sudoers.d/{{group_sudonopwd}}
+    line: '%{{group_sudonopwd}} ALL=(ALL:ALL) NOPASSWD:ALL'
+    regexp: '^%{{group_sudonopwd}}'
+    create: yes
+  when: group_sudonopwd is defined and group_sudonopwd_id is defined
+
+- name: "Create {{group_ssh}} group"
+  group:
+    name: "{{group_ssh}}"
+    gid: "{{group_ssh_id}}"
+  when: group_ssh is defined and group_ssh_id is defined
+

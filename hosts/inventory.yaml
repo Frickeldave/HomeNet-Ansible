@@ -18,14 +18,12 @@ all:
     wsl:
       hosts:
         wsl-homenet-ansible:
-    ubuntu:
+    linux:
       hosts:
         pamela:
-        hildegard:
-    raspberryos:
-      hosts:
         schantalle:
         schakeline:
+        hildegard:
     windows:
       hosts:
         surface:
