@@ -4,6 +4,7 @@
 # Date: 2022-03-18
 # Description: This file for configuring the SSH dameon. Do no modify manually, 
 #   it will be maintained by ansible.
+#
 # Further documentation: 
 #   - BS TR-02102-4 - "Recommendations for the use of SSH"
 #     https://www.bsi.bund.de/EN/Service-Navi/Publications/TechnicalGuidelines/
@@ -11,18 +12,12 @@
 #     internet461
 #   - openbsd man page: https://man.openbsd.org/sshd_config
 #
+# How to test:
+#   - run "nmap --script ssh2-enum-algos localhost" and check received algorithms
+#
 # Changelog: 
 #   2022-03-18 - David Koenig - Initial creation
 #####################################################################################
-
-# AllowAgentForwarding no
-# AllowTcpForwarding no
-# ClientAliveCountMax 3
-# ClientAliveInterval 15
-# Compression delayed
-# GatewayPorts no
-# 
-
 
 ##########################################
 # General settings
@@ -74,9 +69,37 @@ HostKey /etc/ssh/ssh_host_ecdsa_key
 #   The use of this configuration is recommendend by BSI until 2028+. 
 KexAlgorithms  diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
 
+# Specifies the available MAC (message authentication code) algorithms. The MAC
+#   algorithm is used for data integrity protection.
+MACs hmac-sha2-256,hmac-sha2-512
+
 # Will force a rekey after 1Gbyte of data has been sent using the current
 #   key of after 1h has passed since the last key was generated.
 RekeyLimit 1G 1H
+
+##########################################
+# Connection properties
+##########################################
+
+# The default is yes (to send TCP keepalive messages), and the server will 
+#   notice if the network goes down or the client host crashes. This avoids 
+#   infinitely hanging sessions. TCPKeepAlive is spoofable.
+TCPKeepAlive no
+
+# Sets the number of client alive messages which may be sent without sshd 
+#   receiving any messages back from the client. If this threshold is reached 
+#   while client alive messages are being sent, sshd will disconnect the client, 
+#   terminating the session. It is important to note that the use of client 
+#   alive messages is very different from TCPKeepAlive. The client alive 
+#   messages are sent through the encrypted channel and therefore will not be 
+#   spoofable. The TCP keepalive option enabled by TCPKeepAlive is spoofable.
+ClientAliveCountMax 3
+
+# Sets a timeout interval in seconds after which if no data has been received 
+#   from the client, sshd will send a message through the encrypted channel 
+#   to request a response from the client. The default is 0, indicating that 
+#   these messages will not be sent to the client.
+ClientAliveInterval 15
 
 ##########################################
 # Authentication
@@ -123,6 +146,14 @@ KbdInteractiveAuthentication no
 #   failures are logged. The default is 6.
 MaxAuthTries 4
 
+# Enables the Pluggable Authentication Module interface.
+#   If set to ``yes'' this will enable PAM authentication using 
+#   ChallengeResponseAuthentication and PasswordAuthentication in addition 
+#   to PAM account and session module processing for all authentication types.
+#   Both of these authentication types are disabled by hardening, so UsePAM 
+#   should remain off by default.
+UsePAM no
+
 ##########################################
 # Features
 ##########################################
@@ -139,11 +170,6 @@ PrintMotd yes
 #   login when a user logs in interactively. The default is yes.
 PrintLastLog yes
 
-# The default is yes (to send TCP keepalive messages), and the server will 
-#   notice if the network goes down or the client host crashes. This avoids 
-#   infinitely hanging sessions.
-TCPKeepAlive yes
-
 # Specifies what environment variables sent by the client will be copied into 
 #   the session's environment.  Be warned that some environment variables could
 #   be used to bypass restricted user environments. For this reason, care 
@@ -158,13 +184,15 @@ AcceptEnv LANG LC_*
 #   By default no subsystems are defined.
 Subsystem	sftp	/usr/lib/openssh/sftp-server
 
-# Enables the Pluggable Authentication Module interface.
-#   If set to ``yes'' this will enable PAM authentication using 
-#   ChallengeResponseAuthentication and PasswordAuthentication in addition 
-#   to PAM account and session module processing for all authentication types.
-#   Both of these authentication types are disabled by hardening, so UsePAM 
-#   should remain off by default.
-UsePAM no
+# Specifies whether ssh-agent forwarding is permitted. The default is yes.
+# This doesn't prevent users to install their own forwarders.
+AllowAgentForwarding no
+
+# Specifies whether TCP forwarding is permitted. The available options are yes 
+#   (the default) or all to allow TCP forwarding, no to prevent all TCP 
+#   forwarding, local to allow local (from the perspective of ssh(1)) forwarding 
+#   only or remote to allow remote forwarding only. 
+AllowTcpForwarding no
 
 ##########################################
 # Logging
