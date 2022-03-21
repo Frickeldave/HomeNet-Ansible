@@ -1,0 +1,5 @@
+---
+group_sudonopwd: homenet_sudo_nopwd
+group_sudonopwd_id: 30001
+group_ssh: homenet_ssh
+group_ssh_id: 30002

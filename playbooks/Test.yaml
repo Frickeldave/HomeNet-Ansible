@@ -1,0 +1,11 @@
+---
+- name: Test
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Configure vi systemwide
+      include_role:
+        name: app-vi
+

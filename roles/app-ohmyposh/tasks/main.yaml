@@ -57,7 +57,7 @@
   get_url:
     url: "{{ohmyposh_linux_bin_url_arm}}"
     dest: "{{ohmyposh_linux_bin_location}}/oh-my-posh-{{ohmyposh_version}}"
-  when: not bin_is_downloaded.stat.exists and ansible_architecture == "armv6l"
+  when: not bin_is_downloaded.stat.exists and ansible_architecture == "armv6l" or ansible_architecture == "armv7l"
 
 - name: Download ARM64 binary
   get_url:

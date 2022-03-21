@@ -63,34 +63,49 @@
     uid: "{{uid}}"
     
 #################################################################################
-# Set users permissions
+# Set users sudo permissions
 #################################################################################
 
 - name: "{{username}} : Add user to sudo group"
   user:
     name: "{{username}}"
-    groups: sudo
+    groups: "{{group_sudo}}"
     append: true # --> user is not removed from any other group
-  when: (make_sudo_passwordless is defined and make_sudo_passwordless == true) or (make_sudo is defined and make_sudo == true)
+  when: group_sudo is defined and (make_sudo_passwordless is defined and make_sudo_passwordless == true) or (make_sudo is defined and make_sudo == true)
 
-- name: "{{username}} : Add user to sudo-nopasswd group"
+- name: "{{username}} : Add user to {{group_sudonopwd}} group"
   user:
     name: "{{username}}"
-    groups: sudo-nopasswd
+    groups: "{{group_sudonopwd}}"
     append: true # --> user is not removed from any other group
-  when: make_sudo_passwordless is defined and make_sudo_passwordless == true
+  when: group_sudonopwd is defined and (make_sudo_passwordless is defined and make_sudo_passwordless == true)
 
-- name: "{{username}} : Remove user from sudo group"
-  shell: /usr/sbin/delgroup {{username}} sudo
-  when: not (make_sudo_passwordless is defined and make_sudo_passwordless == true) and not (make_sudo is defined and make_sudo == true)
+- name: "{{username}} : Remove user from {{group_sudo}} group"
+  shell: "/usr/sbin/delgroup {{username}} {{group_sudo}}"
+  when: group_sudonopwd is defined and (not (make_sudo_passwordless is defined and make_sudo_passwordless == true) and not (make_sudo is defined and make_sudo == true))
   ignore_errors: yes
   failed_when: false
 
-- name: "{{username}} : Remove user from sudo-nopasswd group"
-  shell: /usr/sbin/delgroup sven sudo-nopasswd
-  when: not (make_sudo_passwordless is defined and make_sudo_passwordless == true)
+- name: "{{username}} : Remove user from {{group_sudonopwd}} group"
+  shell: "/usr/sbin/delgroup {{username}} {{group_sudonopwd}}"
+  when: group_sudonopwd is defined and (not (make_sudo_passwordless is defined and make_sudo_passwordless == true))
   ignore_errors: yes
   failed_when: false
+
+#################################################################################
+# Allow user to be used as ssh target
+#################################################################################
+
+- name: "{{username}} : Add user to group {{group_ssh}}"
+  user:
+    name: "{{username}}"
+    groups: "{{group_ssh}}"
+    append: true # --> user is not removed from any other group
+  when: group_ssh is defined
+
+#################################################################################
+# Configure ssh for user
+#################################################################################
 
 - name: "{{username}} : Create user's .ssh directory"
   file:
