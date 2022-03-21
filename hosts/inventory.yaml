@@ -5,10 +5,10 @@ all:
     pamela:
       ansible_host: 192.168.54.212
     hildegard:
-      ansible_host: 192.168.51.178  
-    schantalle: 
+      ansible_host: 192.168.51.178
+    schantalle:
       ansible_host: 192.168.54.109
-    schakeline: 
+    schakeline:
       ansible_host: 192.168.54.167
     surface:
       ansible_host: 192.168.51.106
