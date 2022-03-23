@@ -1,0 +1,5 @@
+---
+standardgroups_sudo_nopwd_group: "{{global_system_tux_standardgroups_sudo_nopwd | default('temporary_group_nopwd', true) }}"
+standardgroups_sudo_nopwd_groupid: 30001
+standardgroups_ssh_group: "{{global_system_all_ssh_group | default('temporary_group_ssh', true) }}"
+standardgroups_ssh_groupid: 30002

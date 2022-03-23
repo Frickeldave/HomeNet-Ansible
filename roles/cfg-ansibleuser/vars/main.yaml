@@ -1,0 +1,7 @@
+---
+ansibleuser_sudo_nopwd_group: "{{global_system_tux_standardgroups_sudo_nopwd | default('temporary_group_nopwd', true) }}"
+ansibleuser_ssh_group: "{{global_system_all_standardgroups_ssh | default('temporary_group_ssh', true) }}"
+ansibleuser_sudo_group: "{{global_system_tux_standardgroups_sudo | default('sudo', true) }}"
+ansibleuser_home_dir: "{{global_ansible_tux_user_home | default('/home/ansible', true) }}"
+ansibleuser_public_key: "{{global_ansible_all_public_key | default('xxx', true) }}"
+ansibleuser_username: "{{ansible_user | default('ansible', true) }}"

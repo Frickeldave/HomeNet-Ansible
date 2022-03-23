@@ -1,22 +1,14 @@
 ####################################################################################
 #
-# Author: David Koenig
-# Date: 2022-03-18
-# Description: This file for configuring the SSH dameon. Do no modify manually, 
-#   it will be maintained by ansible.
-#
-# Further documentation: 
-#   - BS TR-02102-4 - "Recommendations for the use of SSH"
-#     https://www.bsi.bund.de/EN/Service-Navi/Publications/TechnicalGuidelines/
-#     tr02102/tr02102_node.html;jsessionid=B652B4537008F3307FA064DF7E37C9F2.
-#     internet461
-#   - openbsd man page: https://man.openbsd.org/sshd_config
-#
-# How to test:
-#   - run "nmap --script ssh2-enum-algos localhost" and check received algorithms
+# Author:           David Koenig
+# Date:             2022-03-18
+# Description:      This file for configuring the SSH dameon. Do no modify manually, 
+#                   it will be maintained by ansible.
+# Documentation:    ./../cfg-ssh.md
 #
 # Changelog: 
 #   2022-03-18 - David Koenig - Initial creation
+#   2022-03-22 - David Koenig - Added CIS Benchmark recommendations
 #####################################################################################
 
 ##########################################
@@ -45,7 +37,7 @@ LoginGraceTime 60
 # Specifies whether sshd(8) should check file modes and ownership of the user's
 #   files and home directory before accepting login. This is normally desirable 
 #   because novices sometimes accidentally leave their directory or files world-
- #  writable. The default is yes. 
+#   writable. The default is yes. 
 StrictModes yes
 
 ##########################################
@@ -101,6 +93,21 @@ ClientAliveCountMax 3
 #   these messages will not be sent to the client.
 ClientAliveInterval 15
 
+# To protect a system from denial of service due to a large number of pending 
+#   authentication connection attempts, use the rate limiting function of 
+#   MaxStartups to protect availability of sshd logins and prevent 
+#   overwhelming the daemon. Example: XX:YY:ZZ
+#   XX: Number of unauthenticated connections before we start dropping
+#   YY: Percentage chance of dropping once we reach 10 (increases linearly 
+#       for more than 10)
+#   ZZ: Maximum number of connections at which we start dropping everything
+MaxStartups 10:30:60
+
+# To protect a system from denial of service due to a large number of
+#   concurrent sessions, use the rate limiting function of MaxSessions to 
+#   protect availability of sshd logins and prevent overwhelming the daemon.
+MaxSessions {{ssh_max_sessions}}
+
 ##########################################
 # Authentication
 ##########################################
@@ -154,6 +161,11 @@ MaxAuthTries 4
 #   should remain off by default.
 UsePAM no
 
+# Permitting users the ability to set environment variables through the SSH 
+#   daemon could potentially allow users to bypass security controls (e.g. 
+#   setting an execution path that has ssh executing trojan'd programs)
+PermitUserEnvironment no
+
 ##########################################
 # Features
 ##########################################
@@ -192,7 +204,7 @@ AllowAgentForwarding no
 #   (the default) or all to allow TCP forwarding, no to prevent all TCP 
 #   forwarding, local to allow local (from the perspective of ssh(1)) forwarding 
 #   only or remote to allow remote forwarding only. 
-AllowTcpForwarding no
+AllowTcpForwarding {{ssh_allow_tcp_forward}}
 
 ##########################################
 # Logging

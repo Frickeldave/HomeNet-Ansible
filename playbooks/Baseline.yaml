@@ -1,14 +1,21 @@
 ---
 - name: Baseline
   hosts: all
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
+  vars:
+    ansible_target_environment: dev
 
   tasks:
 
-    - name: "Import variables from file"
+    - name: "Import account variables for {{ansible_target_environment}} environment"
       include_vars:
-        file: ./../hosts/global_vars/accounts.yaml
+        file: "./../hosts/global_vars/{{ansible_target_environment}}/{{ansible_target_environment}}_ansible_accounts.yaml"
+
+
+    - name: "Import ansible user variables for {{ansible_target_environment}} environment"
+      include_vars:
+        file: "./../hosts/global_vars/{{ansible_target_environment}}/{{ansible_target_environment}}_ansible_user.yaml"
 
     - name: Install whois to get mkpasswd tool (needed by role standard-user)
       apt:
@@ -32,31 +39,28 @@
 
     - name: Create standard groups if needed
       include_role:
-        name: cfg-standard-groups
+        name: cfg-standardgroups
 
     - name: Configure ansible
       include_role:
-        name: cfg-ansible-user
-      vars:
-        username: "{{ansible_user}}"
-        ssh_public_key: "{{ansible_user_config.ssh_public_key}}"
+        name: cfg-ansible
 
     - name: Configure SSH
       include_role:
         name: cfg-ssh
 
-    - name: Create Users
+    - name: Create local users
       include_role:
-        name: cfg-standard-user
+        name: cfg-manageusers
       vars:
-        username: "{{item.username}}"
-        password: "{{item.password}}"
-        user_home: "{{item.home_dir}}"
-        make_sudo: "{{item.make_sudo}}"
-        make_sudo_passwordless: "{{item.make_sudo_passwordless}}"
-        user_id: "{{item.userid|int}}"
-        ssh_public_key: "{{item.ssh_public_key}}"
-        hostname_match: "{{item.hostname_match}}"
-      when: accounts is defined and (item.hostname_match == "*" or inventory_hostname in item.hostname_match)
+        manageusers_username: "{{item.username}}"
+        manageusers_password: "{{item.password}}"
+        manageusers_user_home: "{{item.home_dir}}"
+        manageusers_make_sudo: "{{item.make_sudo}}"
+        manageusers_make_sudo_passwordless: "{{item.make_sudo_passwordless}}"
+        manageusers_user_id: "{{item.userid|int}}"
+        manageusers_ssh_public_key: "{{item.ssh_public_key}}"
+        manageusers_hostname_match: "{{item.hostname_match}}"
+      when: accounts is defined and item.hostname_match is defined and (item.hostname_match == "*" or inventory_hostname in item.hostname_match)
       loop: "{{ accounts }}"
-      no_log: true #Supress output for security reasons
+      no_log: true #Supress output. When task is not done (because of "when"-clause) it shows the whole content of the file.

@@ -1,0 +1,125 @@
+---
+
+#################################################################################
+# Create password
+#################################################################################
+
+- name: "{{manageusers_username}} : Create random password value"
+  shell: "tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''"
+  register: randomstr
+
+- name: "{{manageusers_username}} : Use random string as password"
+  set_fact:
+    pwdstr: "{{randomstr.stdout}}"
+  when: manageusers_password is not defined or manageusers_password | length < 1
+
+- name: "{{manageusers_username}} : Use static string as password"
+  set_fact:
+    pwdstr: "{{manageusers_password}}"
+  when: manageusers_password | length > 0
+
+- name: "{{manageusers_username}} : Create encrypted password"
+  shell: mkpasswd -m sha-512 {{pwdstr}}
+  register: pwdstr_encrypted
+
+- name: "{{manageusers_username}} : Remove secret variables"
+  set_fact:
+    pwdstr: ""
+
+- name: "{{manageusers_username}} : Remove secret variables"
+  set_fact:
+    password: ""
+
+#################################################################################
+# Create uid
+#################################################################################
+
+- name: "{{manageusers_username}} : Create random user-id"
+  shell: "shuf -i 1500-65535 -n1"
+  register: randomuid
+
+- name: "{{manageusers_username}} : Use random uid"
+  set_fact:
+    uid: "{{randomuid.stdout|int}}"
+  when: manageusers_user_id is not defined or manageusers_user_id|int < 1
+
+- name: "{{manageusers_username}} : Use static user-id"
+  set_fact:
+    uid: "{{manageusers_user_id|int}}"
+  when: manageusers_user_id is defined and manageusers_user_id|int > 0
+
+
+#################################################################################
+# Create user
+#################################################################################
+
+- name: "{{manageusers_username}} : Create user"
+  user:
+    name: "{{manageusers_username}}"
+    shell: /bin/bash
+    password: "{{pwdstr_encrypted.stdout}}"
+    home: "{{manageusers_user_home}}"
+    update_password: on_create
+    uid: "{{uid}}"
+    
+#################################################################################
+# Set users sudo permissions
+#################################################################################
+
+- name: "{{manageusers_username}} : Add user to sudo group"
+  user:
+    name: "{{manageusers_username}}"
+    groups: "{{manageusers_sudo_group}}"
+    append: true # --> user is not removed from any other group
+  when: manageusers_sudo_group is defined and (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true) or (manageusers_make_sudo is defined and manageusers_make_sudo == true)
+
+- name: "{{manageusers_username}} : Add user to {{manageusers_sudonopwd_group}} group"
+  user:
+    name: "{{manageusers_username}}"
+    groups: "{{manageusers_sudonopwd_group}}"
+    append: true # --> user is not removed from any other group
+  when: manageusers_sudonopwd_group is defined and (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true)
+
+- name: "{{manageusers_username}} : Remove user from {{manageusers_sudo_group}} group"
+  shell: "/usr/sbin/delgroup {{manageusers_username}} {{manageusers_sudo_group}}"
+  when: manageusers_sudonopwd_group is defined and (not (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true) and not (manageusers_make_sudo is defined and manageusers_make_sudo == true))
+  ignore_errors: yes
+  failed_when: false
+
+- name: "{{manageusers_username}} : Remove user from {{manageusers_sudonopwd_group}} group"
+  shell: "/usr/sbin/delgroup {{manageusers_username}} {{manageusers_sudonopwd_group}}"
+  when: manageusers_sudonopwd_group is defined and (not (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true))
+  ignore_errors: yes
+  failed_when: false
+
+#################################################################################
+# Allow user to be used as ssh target
+#################################################################################
+
+- name: "{{manageusers_username}} : Add user to group {{manageusers_ssh_group}}"
+  user:
+    name: "{{manageusers_username}}"
+    groups: "{{manageusers_ssh_group}}"
+    append: true # --> user is not removed from any other group
+  when: manageusers_ssh_group is defined
+
+#################################################################################
+# Configure ssh for user
+#################################################################################
+
+- name: "{{manageusers_username}} : Create user's .ssh directory"
+  file:
+    path: "{{manageusers_user_home}}/.ssh"
+    state: directory
+    owner: "{{manageusers_username}}"
+    group: "{{manageusers_username}}"
+    mode: 0700
+
+- name: "{{manageusers_username}} : Set public key"
+  lineinfile:
+    path: "{{manageusers_user_home}}/.ssh/authorized_keys"
+    owner: "{{manageusers_username}}"
+    group: "{{manageusers_username}}"
+    mode: 0600
+    line: "{{manageusers_ssh_public_key}}"
+    create: yes

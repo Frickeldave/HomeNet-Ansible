@@ -1,4 +1,0 @@
----
-group_sudo: sudo
-group_sudonopwd: homenet_sudo_nopwd
-group_ssh: homenet_ssh

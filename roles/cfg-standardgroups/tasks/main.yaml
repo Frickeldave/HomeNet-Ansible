@@ -1,0 +1,21 @@
+---
+- name: "Create {{standardgroups_sudo_nopwd_group}} group"
+  group:
+    name: "{{standardgroups_sudo_nopwd_group}}"
+    gid: "{{standardgroups_sudo_nopwd_groupid}}"
+  when: standardgroups_sudo_nopwd_group is defined and standardgroups_sudo_nopwd_groupid is defined
+
+- name: "Add {{standardgroups_sudo_nopwd_group}} group to sudoers file"
+  lineinfile:
+    dest: /etc/sudoers.d/{{standardgroups_sudo_nopwd_group}}
+    line: '%{{standardgroups_sudo_nopwd_group}} ALL=(ALL:ALL) NOPASSWD:ALL'
+    regexp: '^%{{standardgroups_sudo_nopwd_group}}'
+    create: yes
+  when: standardgroups_sudo_nopwd_group is defined and standardgroups_sudo_nopwd_group is defined
+
+- name: "Create {{standardgroups_ssh_group}} group"
+  group:
+    name: "{{standardgroups_ssh_group}}"
+    gid: "{{standardgroups_ssh_groupid}}"
+  when: standardgroups_ssh_group is defined and standardgroups_ssh_groupid is defined
+

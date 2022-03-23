@@ -1,5 +1,16 @@
 ---
+# Internal ansible variables
 ansible_user: ansible
 ansible_ssh_private_key_file: "~/.ssh/ansible.key"
-global_system_contact: David Koenig
-global_system_contact_email: dave@frickeldave.de
+
+# Custom variables
+global_ansible_tux_user_home: "/home/ansible"
+global_ansible_all_public_key: "xxx" # Just for documentation, is overwritten by global_vars/xxx/prd_ansible_user.yaml
+global_org_all_contact: "David Koenig"
+global_org_all_contact_email: "dave@frickeldave.de"
+global_system_tux_standardgroups_sudo_nopwd: "homenet_sudo_nopwd"
+global_system_tux_standardgroups_sudo: "sudo"
+global_system_all_ssh_group: "homenet_ssh"
+global_system_all_ssh_port: 22
+global_system_all_ssh_allow_tcp_forward: "no" # Recommmendation by CIS = "no"
+global_system_all_ssh_max_sessions: 4 # Recommmendation by CIS = "4"

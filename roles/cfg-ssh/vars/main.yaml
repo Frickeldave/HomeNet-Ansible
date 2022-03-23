@@ -1,3 +1,7 @@
 ---
-ssh_group: homenet_ssh
-ssh_port: 22
+ssh_group: "{{global_system_all_ssh_group | default('ssh_temporary_group', true) }}"
+ssh_port: "{{global_system_all_ssh_port | default(22, true) }}"
+ssh_allow_tcp_forward: "{{global_system_all_ssh_allow_tcp_forward | default('no', true) }}"
+ssh_max_sessions: "{{global_system_all_ssh_max_sessions | default(4, true) }}"
+ssh_contact: "{{global_org_all_contact | default(System Administrator, true) }}"
+ssh_contact_email: "{{global_org_all_contact_email | default(admin@org.local, true) }}"

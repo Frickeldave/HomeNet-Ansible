@@ -1,5 +1,0 @@
----
-group_sudonopwd: homenet_sudo_nopwd
-group_ssh: homenet_ssh
-group_sudo: sudo
-user_home: /home/ansible

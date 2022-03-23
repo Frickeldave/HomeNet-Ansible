@@ -16,12 +16,20 @@
     group: root
     mode: '0644'
 
+- name: Configure issue.net
+  template:
+    src: issue.net.j2
+    dest: /etc/issue.net
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Configure SSH server
   template:
     src: sshd_config.j2
     dest: /etc/ssh/sshd_config
     owner: root
     group: root
-    mode: '0644'
+    mode: '0600'
   notify:
     - Restart SSH service

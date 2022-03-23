@@ -1,0 +1,4 @@
+---
+manageusers_sudo_group: "{{global_system_tux_standardgroups_sudo | default('sudo', true) }}"
+manageusers_sudonopwd_group: "{{global_system_tux_standardgroups_sudo_nopwd | default('temporary_group_nopwd', true) }}"
+manageusers_ssh_group: "{{global_system_all_ssh_group | default('temporary_group_ssh', true) }}"
