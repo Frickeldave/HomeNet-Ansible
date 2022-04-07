@@ -2,3 +2,5 @@
 *.secrets
 *secrets.yaml
 ansible.log
+Test.yaml
+test.yaml

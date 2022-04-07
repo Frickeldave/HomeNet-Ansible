@@ -1,0 +1,39 @@
+---
+# Thanks to: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
+
+- name: Check current docker-compose version
+  command: /usr/libexec/docker/cli-plugins/docker-compose --version
+  register: docker_compose_vsn
+  changed_when: false
+  failed_when: false
+  check_mode: no
+
+- debug: 
+    var: docker_compose_vsn
+
+- name: Write current version to local variable
+  set_fact:
+    docker_compose_current_version: "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+  when:
+    - docker_compose_vsn.stdout | length > 0
+
+- name: Write default version 0 to local variable
+  set_fact:
+    docker_compose_current_version: "0"
+  when:
+    - docker_compose_vsn.stdout | length == 0
+
+- debug: 
+    var: docker_compose_version
+
+- debug: 
+    var: docker_compose_current_version
+
+- name: Install or upgrade docker-compose
+  get_url: 
+    url : "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64"
+    dest:  /usr/libexec/docker/cli-plugins/docker-compose
+    mode: 'a+x'
+    force: yes
+  when:
+    - docker_compose_current_version is version(docker_compose_version, '<')

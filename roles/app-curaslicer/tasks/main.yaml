@@ -1,0 +1,30 @@
+---
+- name: "Check if appimage exists locally"
+  stat:
+    path: "{{cura_storage_location}}/cura-slicer-{{cura_version}}.AppImage"
+  register:
+    "cura_downloaded"
+
+- name: " Download cura appimage"
+  get_url:
+    url: "{{cura_download_url}}"
+    dest: "{{cura_storage_location}}/cura-slicer-{{cura_version}}.AppImage"
+  when: not cura_downloaded.stat.exists
+
+- name: " Download cura icon"
+  get_url:
+    url: "https://github.com/Ultimaker/Cura/blob/master/icons/cura-128.png?raw=true"
+    dest: "/usr/local/bin/cura-slicer.png"
+
+- name: "Add execute permissions"
+  file:
+    dest: "{{cura_storage_location}}/cura-slicer-{{cura_version}}.AppImage"
+    mode: a+x
+
+- name: Create menu entry
+  template:
+    src: cura-slicer.desktop
+    dest: /usr/share/applications/cura-slicer.desktop
+    owner: root
+    group: root
+    mode: 0644

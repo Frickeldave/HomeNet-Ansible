@@ -1,0 +1,7 @@
+---
+# cura version
+cura_version: "4.13.1"
+# From where to download cura slicer
+cura_download_url: "https://github.com/Ultimaker/Cura/releases/download/{{cura_version}}/Ultimaker_Cura-{{cura_version}}.AppImage"
+# Where to save the image
+cura_storage_location: "/usr/local/bin"

@@ -1,0 +1,58 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - git
+      - apt-transport-https
+      - ca-certificates
+      - wget
+      - software-properties-common
+      - gnupg2
+      - curl
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Add Apt signing key from official docker repo
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add docker official repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable
+    state: present
+
+- name: Index new repo into the cache
+  become: yes
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Install docker
+  apt:
+    name:
+      - docker-ce
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: "Create user {{docker_username}}"
+  include_role:
+    name: standard-user
+  vars:
+    username: "{{docker_username}}"
+    user_home: "{{docker_user_home}}"
+    password: "{{docker_password}}"
+    user_id: 50000
+    make_sudo: no
+    make_sudo_passwordless: no
+    ssh_public_key: "{{docker_ssh_public_key}}"
+
+- name: "{{docker_username}}: Add user to docker group"
+  user:
+    name: "{{docker_username}}"
+    groups: docker
+    append: true

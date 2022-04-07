@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Cura-Slicer
+Exec=/usr/local/bin/cura-slicer-{{cura_version}}.AppImage
+Icon=/usr/local/bin/cura-slicer.png
+Categories=Graphics

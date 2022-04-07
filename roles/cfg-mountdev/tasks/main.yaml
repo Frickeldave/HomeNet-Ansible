@@ -1,0 +1,27 @@
+---
+- name: Create mount directory
+  file:
+    path: "{{mountdev_path}}"
+    state: directory
+
+# Parameter: 
+#  UUID:            Read with blkid
+#  mountpath:       Must exist
+#  filesystemtype:  vfat for FAT32
+#  default:         options of "-o" in mount command
+#  dump:            0 means no backup with dump
+#  pass:            0 means no filesystemcheck (win system must have 0)
+
+- name: Add mount path to fstab
+  lineinfile:
+    path: "/etc/fstab"
+    regexp: '^UUID={{mountdev_uuid}}'
+    line: "UUID={{mountdev_uuid}} {{mountdev_path}} auto defaults 0 0"
+
+- name: "Unmount device"
+  shell: |
+    umount {{mountdev_path}}
+    exit 0
+
+- name: "Mount device initially"
+  shell: "mount UUID={{mountdev_uuid}} {{mountdev_path}}"

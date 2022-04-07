@@ -1,0 +1,41 @@
+---
+- name: Baseline
+  hosts: hildegard
+  become: true
+  gather_facts: true
+  vars:
+    ansible_target_environment: prd
+
+  tasks:
+
+    - name: "Import account variables for {{ansible_target_environment}} environment"
+      include_vars:
+        file: "./../hosts/global_vars/{{ansible_target_environment}}/{{ansible_target_environment}}_all_enc.yaml"
+
+    - name: Install xfce
+      include_role:
+        name: app-xfce
+
+    - name: Disable powersaving settings 
+      shell: | 
+        gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+        systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+    - name: Install xrdp
+      include_role:
+        name: app-xrdp
+
+    - name: Install edge
+      include_role:
+        name: app-edge
+
+    - name: Install curaslicer
+      include_role:
+        name: app-curaslicer
+
+    - name: Mount device
+      include_role:
+        name: cfg-mountdev #TODO: Raises an error -> stderr": "mount: /mnt/usbstick_a: /dev/sdb2 already mounted on /mnt/usbstick_a."
+      vars:
+        mountdev_path: "/mnt/usbstick_a"
+        mountdev_uuid: "f63c6974-c4a7-4629-a9ee-3a470e1b7630"

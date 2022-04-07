@@ -1,0 +1,41 @@
+---
+- name: Install xfce minimal environment
+  apt:
+    name:
+      # Mandatory components
+      - xorg #XServer
+      - dbus-x11
+      - x11-xserver-utils
+      - xfdesktop4
+      - xfce4-panel
+      - xfwm4
+      - xfce4-settings
+      - xfce4-session
+      - lightdm # GDM/ Login Screen
+      # Optional components
+      #- xfconf
+      #- adwaita-qt
+      #- qt5ct #qt5 configuration utility
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install xfce utils
+  apt:
+    name:
+      - thunar # File Manager
+      - thunar-archive-plugin # Compress and uncompress from File Manager
+      - synaptic # PackageManager
+      - gdebi # PackageInstaller
+      - libxfce4ui-utils
+      - xfce4-pulseaudio-plugin
+      - xfce4-whiskermenu-plugin
+      - epiphany-browser # browser
+      - ristretto # Image Viewer
+      - xfce4-terminal # Terminal
+      - xfce4-appfinder # Appfinder
+      - mousepad # Texteditor
+      - xscreensaver # Important to disable screenlock or set timeouts
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600

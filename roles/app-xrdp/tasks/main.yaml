@@ -1,0 +1,18 @@
+---
+- name: Install xrdp
+  apt:
+    name:
+      - xrdp
+
+- name: Patch xrdp to local file .xsession
+  lineinfile:
+    path: "{{item.home_dir}}/.xsession"
+    regexp: '^startxfce4'
+    line: startxfce4
+    owner: "{{item.username}}"
+    group: "{{item.username}}"
+    mode: '0766'
+    create: yes
+  when: accounts is defined
+  loop: "{{ accounts }}"
+  no_log: true #Supress output. When task is not done (because of "when"-clause) it shows the whole content of the file.
