@@ -39,3 +39,8 @@
       vars:
         mountdev_path: "/mnt/usbstick_a"
         mountdev_uuid: "f63c6974-c4a7-4629-a9ee-3a470e1b7630"
+  
+    - name: Create home directory on mount point
+      file:
+        path: "/mnt/usbstick_a/home"
+        state: directory

@@ -44,18 +44,6 @@
       include_role:
         name: cfg-ssh
 
-    - name: Mount device
-      include_role:
-        name: cfg-mountdev
-      vars:
-        mountdev_path: "/mnt/usbstick_a"
-        mountdev_uuid: "f63c6974-c4a7-4629-a9ee-3a470e1b7630"
-  
-    - name: Create home directory on mount point
-      file:
-        path: "/mnt/usbstick_a/home"
-        state: directory
-
     - name: Create local users
       include_role:
         name: cfg-manageusers

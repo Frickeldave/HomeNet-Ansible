@@ -1,16 +1,33 @@
 ---
+############################################################
 # Internal ansible variables
+############################################################
+# The user used to connect to the target system
 ansible_user: ansible
+# The private key file
 ansible_ssh_private_key_file: "~/.ssh/ansible.key"
 
+############################################################
 # Custom variables
-global_ansible_tux_user_home: "/home/ansible"
-global_ansible_all_public_key: "xxx" # Just for documentation, is overwritten by global_vars/xxx/prd_ansible_user.yaml
+############################################################
+# Disabled 2022-04-07 Probably not used anymore
+#global_ansible_tux_user_home: "/home/ansible"
+
+# Just for documentation, is overwritten by global_vars/xxx/xxx_all_enc.yaml
+global_ansible_all_public_key: "xxx"
+# The contact used in scenarios like ssh welcome screen
 global_org_all_contact: "David Koenig"
+# The mail address used in scenarios like ssh welcome screen
 global_org_all_contact_email: "dave@frickeldave.de"
+# The group which will be registered on every system to allow admin permissions without ssh access
 global_system_tux_standardgroups_sudo_nopwd: "homenet_sudo_nopwd"
+# The default suod group
 global_system_tux_standardgroups_sudo: "sudo"
+# The group which will be registered on every system to allow ssh connection
 global_system_all_ssh_group: "homenet_ssh"
+# The default SSH port
 global_system_all_ssh_port: 22
-global_system_all_ssh_allow_tcp_forward: "no" # Recommmendation by CIS = "no"
-global_system_all_ssh_max_sessions: 4 # Recommmendation by CIS = "4"
+# Allow forwarding. Recommendation is "no", but it is needed in some situation to set to "yes"
+global_system_all_ssh_allow_tcp_forward: "no"
+# The number of maximum allowed SSH sessions for a server. The recommmendation is "4", but in some situations its needed to allow more connections
+global_system_all_ssh_max_sessions: 4 

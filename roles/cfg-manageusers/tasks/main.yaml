@@ -83,13 +83,13 @@
 - name: "{{manageusers_username}} : Remove user from {{manageusers_sudo_group}} group"
   shell: "/usr/sbin/delgroup {{manageusers_username}} {{manageusers_sudo_group}}"
   when: manageusers_sudonopwd_group is defined and (not (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true) and not (manageusers_make_sudo is defined and manageusers_make_sudo == true))
-  ignore_errors: yes
+  ignore_errors: true
   failed_when: false
 
 - name: "{{manageusers_username}} : Remove user from {{manageusers_sudonopwd_group}} group"
   shell: "/usr/sbin/delgroup {{manageusers_username}} {{manageusers_sudonopwd_group}}"
   when: manageusers_sudonopwd_group is defined and (not (manageusers_make_sudo_passwordless is defined and manageusers_make_sudo_passwordless == true))
-  ignore_errors: yes
+  ignore_errors: true
   failed_when: false
 
 #################################################################################
